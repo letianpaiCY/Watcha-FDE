@@ -1,0 +1,6 @@
+interface:
+  display_name: "FDE 报销 Ticket Mock"
+  short_description: "为 FDE 共学营创建报销制度和二百条 Ticket 并导入飞书"
+  default_prompt: "Use $fde-mock-expense-tickets to create a mock expense policy and 200 expense tickets in Feishu."
+policy:
+  allow_implicit_invocation: true

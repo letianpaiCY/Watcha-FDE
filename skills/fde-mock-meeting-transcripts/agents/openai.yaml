@@ -1,0 +1,6 @@
+interface:
+  display_name: "FDE 会议字幕 Mock"
+  short_description: "为 FDE 共学营创建五份脱敏企业会议字幕并导入飞书文档"
+  default_prompt: "Use $fde-mock-meeting-transcripts to create five mock enterprise meeting transcript documents in Feishu."
+policy:
+  allow_implicit_invocation: true
