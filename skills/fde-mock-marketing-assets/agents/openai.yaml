@@ -1,0 +1,4 @@
+interface:
+  display_name: "FDE 营销图片 Mock"
+  short_description: "创建 CHA CUP 营销图片项目的飞书模拟业务材料"
+  default_prompt: "Use $fde-mock-marketing-assets to create the CHA CUP marketing project mock materials in Feishu."
