@@ -14,17 +14,20 @@ SKILLS = ROOT / "skills"
 
 
 class KnowledgeAssetsTest(unittest.TestCase):
-    def test_each_industry_has_five_structured_documents(self) -> None:
+    def test_only_beauty_retail_has_five_structured_documents(self) -> None:
         base = SKILLS / "fde-mock-knowledge-base" / "assets"
-        for industry in ("manufacturing", "beauty-retail", "pharma"):
-            documents = sorted((base / industry).glob("*.md"))
-            self.assertEqual(len(documents), 5, industry)
-            for document in documents:
-                content = document.read_text(encoding="utf-8")
-                self.assertTrue(content.startswith("# "))
-                for heading in ("## 文档信息", "## 例外与人工升级", "## 不适用范围", "## 公开来源"):
-                    self.assertIn(heading, content, document.name)
-                self.assertIn("https://", content)
+        self.assertEqual(
+            sorted(path.name for path in base.iterdir() if path.is_dir()),
+            ["beauty-retail"],
+        )
+        documents = sorted((base / "beauty-retail").glob("*.md"))
+        self.assertEqual(len(documents), 5)
+        for document in documents:
+            content = document.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith("# "))
+            for heading in ("## 文档信息", "## 例外与人工升级", "## 不适用范围", "## 公开来源"):
+                self.assertIn(heading, content, document.name)
+            self.assertIn("https://", content)
 
 
 class MeetingAssetsTest(unittest.TestCase):
@@ -92,9 +95,8 @@ class DryRunTest(unittest.TestCase):
 
     def test_knowledge_preview(self) -> None:
         skill = SKILLS / "fde-mock-knowledge-base"
-        payload = self.run_json(
-            skill, "scripts/create_feishu_docs.py", "--industry", "pharma", "--dry-run"
-        )
+        payload = self.run_json(skill, "scripts/create_feishu_docs.py", "--dry-run")
+        self.assertEqual(payload["industry"], "美妆零售")
         self.assertEqual(payload["writes"], 6)
         self.assertEqual(len(payload["documents"]), 5)
 

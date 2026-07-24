@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create one industry knowledge pack as Feishu documents."""
+"""Create the beauty retail knowledge pack as Feishu documents."""
 
 from __future__ import annotations
 
@@ -15,11 +15,8 @@ from typing import Any
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
-INDUSTRIES = {
-    "manufacturing": ("制造业", SKILL_DIR / "assets" / "manufacturing"),
-    "beauty-retail": ("美妆零售", SKILL_DIR / "assets" / "beauty-retail"),
-    "pharma": ("医药行业", SKILL_DIR / "assets" / "pharma"),
-}
+INDUSTRY_NAME = "美妆零售"
+ASSET_DIR = SKILL_DIR / "assets" / "beauty-retail"
 
 
 def build_runtime_env() -> dict[str, str]:
@@ -131,41 +128,37 @@ def verify_document(url: str) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--industry", choices=INDUSTRIES, required=True)
     parser.add_argument("--batch-name", help="Optional run label")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--yes", action="store_true", help="Confirm Feishu writes")
     args = parser.parse_args()
 
-    industry_name, asset_dir = INDUSTRIES[args.industry]
-    assets = sorted(asset_dir.glob("*.md"))
+    assets = sorted(ASSET_DIR.glob("*.md"))
     if len(assets) != 5:
-        raise SystemExit(f"expected 5 documents in {asset_dir}, found {len(assets)}")
+        raise SystemExit(f"expected 5 documents in {ASSET_DIR}, found {len(assets)}")
     documents = [read_asset(path) for path in assets]
     batch = args.batch_name or dt.datetime.now().strftime("%Y%m%d-%H%M")
 
     preview = {
-        "industry": industry_name,
+        "industry": INDUSTRY_NAME,
         "batch": batch,
         "documents": [title for title, _ in documents],
         "writes": 6,
     }
     if args.dry_run or not args.yes:
         preview["status"] = "preview"
-        preview["next_command"] = (
-            f"python3 scripts/create_feishu_docs.py --industry {args.industry} --yes"
-        )
+        preview["next_command"] = "python3 scripts/create_feishu_docs.py --yes"
         print(json.dumps(preview, ensure_ascii=False, indent=2))
         return 0 if args.dry_run else 2
 
     created: list[dict[str, str]] = []
     try:
         for title, body in documents:
-            final_title = f"[FDE Mock·{industry_name}·{batch}] {title}"
+            final_title = f"[FDE Mock·{INDUSTRY_NAME}·{batch}] {title}"
             created.append(create_document(final_title, body))
 
         index_lines = [
-            f"本批次包含 5 篇{industry_name}脱敏模拟企业知识文档。",
+            f"本批次包含 5 篇{INDUSTRY_NAME}脱敏模拟企业知识文档。",
             "",
             "这些材料只用于 FDE 共学营项目实践，不代表真实企业制度或专业意见。",
             "",
@@ -174,7 +167,7 @@ def main() -> int:
         ]
         index_lines.extend(f"- [{item['title']}]({item['url']})" for item in created)
         index = create_document(
-            f"[FDE Mock·{industry_name}·{batch}] 知识库目录",
+            f"[FDE Mock·{INDUSTRY_NAME}·{batch}] 知识库目录",
             "\n".join(index_lines) + "\n",
         )
         created.append(index)
@@ -193,7 +186,7 @@ def main() -> int:
 
     print(
         json.dumps(
-            {"status": "success", "industry": industry_name, "created": created},
+            {"status": "success", "industry": INDUSTRY_NAME, "created": created},
             ensure_ascii=False,
             indent=2,
         )

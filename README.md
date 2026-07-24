@@ -13,7 +13,7 @@ npx --version
 
 ## 分场景安装
 
-### 企业知识库
+### 美妆零售知识库
 
 ```bash
 npx skills add letianpaiCY/Watcha-FDE --skill fde-mock-knowledge-base -g
@@ -22,10 +22,8 @@ npx skills add letianpaiCY/Watcha-FDE --skill fde-mock-knowledge-base -g
 安装后对 Agent 说：
 
 ```text
-使用 fde-mock-knowledge-base 创建制造业知识库材料
+使用 fde-mock-knowledge-base 创建美妆零售知识库材料
 ```
-
-制造业可以替换为美妆零售或医药行业。
 
 ### 会议决策与任务跟踪
 
